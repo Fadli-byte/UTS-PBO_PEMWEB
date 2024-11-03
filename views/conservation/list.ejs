@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Area Konservasi - InfoSea</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #background-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+
+        header {
+            background: linear-gradient(to right, #006994, #003366);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #66ccff;
+        }
+
+        main {
+            margin-top: 80px;
+            min-height: calc(100vh - 160px);
+            padding: 2rem 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            color: white;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .add-button {
+            display: inline-block;
+            background: linear-gradient(to right, #006994, #003366);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: bounce 1.5s infinite;
+        }
+
+        .add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0 2rem 0;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            color: #2c3e50;
+        }
+
+        th {
+            background: linear-gradient(to right, #006994, #003366);
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(240, 248, 255, 0.9);
+        }
+
+        tr:hover {
+            background-color: rgba(102, 204, 255, 0.1);
+        }
+
+        .action-links a {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-right: 0.5rem;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .edit-link {
+            background: linear-gradient(to right, #27ae60, #2ecc71);
+        }
+
+        .edit-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .delete-link {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+        }
+
+        .delete-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(to right, #1e90ff, #4169e1);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-left: 20px;
+            transition: all 0.3s;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        footer {
+            background: linear-gradient(to right, #003366, #006994);
+            color: white;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section p {
+            line-height: 1.6;
+        }
+
+        /* Map styles */
+        #map {
+            height: 200px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: #66ccff;
+            transform: translateY(-3px);
+        }
+
+        .bottom-footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes rowFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        tbody tr {
+            animation: rowFade 0.8s ease-in;
+        }
+
+        @media (max-width: 992px) {
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 1rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            th, td {
+                padding: 0.8rem;
+            }
+
+            .action-links a {
+                padding: 0.3rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            #map {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <video autoplay muted loop id="background-video">
+        <source src="/public/19016098-hd_1920_1080_30fps.mp4" type="video/mp4">
+    </video>
+
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo-container">
+                <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10,50 Q25,40 40,50 T70,50 T100,50" stroke="white" stroke-width="4" fill="none"/>
+                    <path d="M10,65 Q25,55 40,65 T70,65 T100,65" stroke="white" stroke-width="4" fill="none"/>
+                    <path d="M60,35 Q70,25 80,35 L85,30 L85,40 L80,35 Q70,45 60,35" fill="white"/>
+                    <circle cx="30" cy="25" r="5" fill="white"/>
+                </svg>
+                <span class="logo-text">InfoSea</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="/">Logout</a></li>
+                    <li><a href="/species">Daftar Spesies</a></li>
+                    <li><a href="/conservation">Area Konservasi</a></li>
+                    <li><a href="/participation">Partisipasi</a></li>
+                    <li><a href="/auth/login">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <h1 class="page-title">Daftar Area Konservasi</h1>
+        <a href="/conservation/add" class="add-button">Tambah Area Konservasi Baru</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama</th>
+                    <th>Lokasi</th>
+                    <th>Ukuran Area (km²)</th>
+                    <th>Deskripsi</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% areas.forEach(area => { %>
+                    <tr>
+                        <td><%= area.id %></td>
+                        <td><%= area.name %></td>
+                        <td><%= area.location %></td>
+                        <td><%= area.area_size %></td>
+                        <td><%= area.description || 'Tidak ada deskripsi' %></td>
+                        <td class="action-links">
+                            <a href="/conservation/edit/<%= area.id %>" class="edit-link">Edit</a>
+                            <a href="/conservation/delete/<%= area.id %>" class="delete-link" onclick="return confirm('Yakin ingin menghapus?');">Hapus</a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <a href="/" class="back-button">Kembali ke Beranda</a>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Tentang InfoSea</h3>
+                <p>InfoSea adalah platform edukasi yang didedikasikan untuk melestarikan dan mengedukasi masyarakat tentang kekayaan laut Indonesia.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Kontak</h3>
+                <p><i class="fas fa-envelope"></i> info@infosea.id</p>
+                <p><i class="fas fa-phone"></i> (021) 1234-5678</p>
+                <p><i class="fas fa-map-marker-alt"></i> Jakarta, Indonesia</p>
+            </div>
+            <div class="footer-section">
+                <h3>Ikuti Kami</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Lokasi Kami</h3>
+                <div id="map"></div>
+            </div>
+        </div>
+        <div class="bottom-footer">
+            <p>&copy; 2024 InfoSea. Dibuat Oleh Fadli Kurnia Ramadhan</p>
+        </div>
+    </footer>
+
+    <!-- Add Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([-6.2088, 106.8456], 13); // Coordinates for Jakarta
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add a marker for the office location
+        L.marker([-6.2088, 106.8456]).addTo(map)
+            .bindPopup('InfoSea Office')
+            .openPopup();
+    </script>
+</body>
+</html>

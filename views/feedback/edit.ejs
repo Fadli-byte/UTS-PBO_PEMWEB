@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Feedback</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Ganti dengan jalur CSS Anda -->
+</head>
+<body>
+    <h1>Edit Feedback</h1>
+    <form action="/feedback/<%= feedback.id %>" method="POST">
+        <input type="hidden" name="_method" value="PUT"> <!-- Untuk mengindikasikan metode PUT -->
+        <div>
+            <label for="user_id">User ID:</label>
+            <input type="number" id="user_id" name="user_id" value="<%= feedback.user_id %>" required>
+        </div>
+        <div>
+            <label for="title">Judul:</label>
+            <input type="text" id="title" name="title" value="<%= feedback.title %>" required>
+        </div>
+        <div>
+            <label for="content">Konten:</label>
+            <textarea id="content" name="content" required><%= feedback.content %></textarea>
+        </div>
+        <div>
+            <label for="status">Status:</label>
+            <select id="status" name="status">
+                <option value="Pending" <%= feedback.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                <option value="Reviewed" <%= feedback.status === 'Reviewed' ? 'selected' : '' %>>Reviewed</option>
+            </select>
+        </div>
+        <button type="submit">Simpan Perubahan</button>
+    </form>
+    <a href="/feedback">Kembali ke Daftar Feedback</a>
+</body>
+</html>

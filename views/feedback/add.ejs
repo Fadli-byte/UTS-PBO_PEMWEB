@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Feedback</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Ganti dengan jalur CSS Anda -->
+</head>
+<body>
+    <h1>Tambah Feedback</h1>
+    <form action="/feedback" method="POST">
+        <div>
+            <label for="user_id">User ID:</label>
+            <input type="number" id="user_id" name="user_id" required>
+        </div>
+        <div>
+            <label for="title">Judul:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div>
+            <label for="content">Konten:</label>
+            <textarea id="content" name="content" required></textarea>
+        </div>
+        <button type="submit">Simpan</button>
+    </form>
+    <a href="/feedback">Kembali ke Daftar Feedback</a>
+</body>
+</html>
